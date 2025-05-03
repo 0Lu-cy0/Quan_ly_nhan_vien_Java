@@ -83,7 +83,7 @@ public class SalaryViews extends javax.swing.JPanel {
         jPanel8.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         jbtLamMoi.setForeground(new java.awt.Color(0, 102, 102));
-        jbtLamMoi.setText("Làm Mới");
+        jbtLamMoi.setText("Cập nhật");
         jbtLamMoi.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jbtLamMoiActionPerformed(evt);
@@ -133,7 +133,7 @@ public class SalaryViews extends javax.swing.JPanel {
         jPanel8.add(jtfMonth, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 60, 140, -1));
 
         jbtXoa.setForeground(new java.awt.Color(0, 102, 102));
-        jbtXoa.setText("Xoá");
+        jbtXoa.setText("Làm mới");
         jbtXoa.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jbtXoaActionPerformed(evt);

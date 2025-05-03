@@ -249,38 +249,38 @@ public class AttendanceViews extends javax.swing.JPanel {
 
     private void jbtChamCongActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbtChamCongActionPerformed
         int selectedRow = jtbBangChamCong.getSelectedRow();
-        if (selectedRow >= 0) {
-            try {
-                int employeeId = (int) jtbBangChamCong.getValueAt(selectedRow, 1);
-                String monthYear = (String) jtbBangChamCong.getValueAt(selectedRow, 2);
-                String[] parts = monthYear.split("/");
-                int month = Integer.parseInt(parts[0]);
-                int year = Integer.parseInt(parts[1]);
+    if (selectedRow >= 0) {
+        try {
+            int employeeId = (int) jtbBangChamCong.getValueAt(selectedRow, 1);
+            String monthYear = (String) jtbBangChamCong.getValueAt(selectedRow, 2);
+            String[] parts = monthYear.split("/");
+            int month = Integer.parseInt(parts[0]);
+            int year = Integer.parseInt(parts[1]);
 
-                // Lấy Frame cha
-                Frame parentFrame = (Frame) SwingUtilities.getWindowAncestor(this);
+            // Lấy Frame cha
+            Frame parentFrame = (Frame) SwingUtilities.getWindowAncestor(this);
 
-                // Tạo dialog với Frame cha
-                AttendanceDate dialog = new AttendanceDate(parentFrame, employeeId, month, year);
-                dialog.setLocationRelativeTo(this);
-                dialog.setVisible(true);
+            // Tạo dialog với Frame cha (chế độ chỉnh sửa)
+            AttendanceDate dialog = new AttendanceDate(parentFrame, employeeId, month, year, true);
+            dialog.setLocationRelativeTo(this);
+            dialog.setVisible(true);
 
-                // Refresh bảng sau khi đóng dialog
-                displayAttendance();
+            // Refresh bảng sau khi đóng dialog
+            displayAttendance();
 
-            } catch (Exception e) {
-                e.printStackTrace();
-                JOptionPane.showMessageDialog(this,
-                        "Có lỗi xảy ra khi mở form chấm công: " + e.getMessage(),
-                        "Lỗi",
-                        JOptionPane.ERROR_MESSAGE);
-            }
-        } else {
+        } catch (Exception e) {
+            e.printStackTrace();
             JOptionPane.showMessageDialog(this,
-                    "Vui lòng chọn nhân viên cần chấm công!",
-                    "Thông báo",
-                    JOptionPane.WARNING_MESSAGE);
+                    "Có lỗi xảy ra khi mở form chấm công: " + e.getMessage(),
+                    "Lỗi",
+                    JOptionPane.ERROR_MESSAGE);
         }
+    } else {
+        JOptionPane.showMessageDialog(this,
+                "Vui lòng chọn nhân viên cần chấm công!",
+                "Thông báo",
+                JOptionPane.WARNING_MESSAGE);
+    }
     }//GEN-LAST:event_jbtChamCongActionPerformed
 
     private void jbtTimKiemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbtTimKiemActionPerformed

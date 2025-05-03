@@ -1,7 +1,10 @@
 package quan_ly_nhan_vien.views;
 
 import com.toedter.calendar.JDateChooser;
+import java.awt.BorderLayout;
+import java.awt.Frame;
 import java.awt.GridLayout;
+import java.awt.Window;
 import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.FileInputStream;
@@ -13,11 +16,14 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Date;
 import java.util.Vector;
+import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
 import org.apache.poi.ss.usermodel.Cell;
@@ -28,6 +34,8 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import quan_ly_nhan_vien.utils.DatabaseConnection;
 import quan_ly_nhan_vien.utils.HashPassword;
+import javax.swing.JDialog;
+import javax.swing.SwingUtilities;
 
 public class EmployeeViews extends javax.swing.JPanel {
 
@@ -45,7 +53,7 @@ public class EmployeeViews extends javax.swing.JPanel {
         jtbEmployee = new javax.swing.JTable();
         jPanel5 = new javax.swing.JPanel();
         jLabel6 = new javax.swing.JLabel();
-        jtfid = new javax.swing.JTextField();
+        jtfiEmployeeID = new javax.swing.JTextField();
         jLabel4 = new javax.swing.JLabel();
         jtfPhone = new javax.swing.JTextField();
         jLabel5 = new javax.swing.JLabel();
@@ -55,16 +63,17 @@ public class EmployeeViews extends javax.swing.JPanel {
         jLabel8 = new javax.swing.JLabel();
         jlbPhone = new javax.swing.JLabel();
         jbtThemNhanVien = new javax.swing.JButton();
-        jbtXoaNhanVien = new javax.swing.JButton();
         jbtSuaNhanVien = new javax.swing.JButton();
         jbtLamMoi = new javax.swing.JButton();
         jdcDateOfBirth = new com.toedter.calendar.JDateChooser();
         jtffullname = new javax.swing.JTextField();
         jbtXuat = new javax.swing.JButton();
         jbtNhap = new javax.swing.JButton();
-        jbtTimKiem = new javax.swing.JButton();
+        jbtRSMatKhau = new javax.swing.JButton();
+        jbtThongBao = new javax.swing.JButton();
         jcbbTimKiem = new javax.swing.JComboBox<>();
         jtfTimKiem = new javax.swing.JTextField();
+        jbtTimKiem1 = new javax.swing.JButton();
 
         j1.setBackground(new java.awt.Color(255, 255, 255));
         j1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
@@ -96,7 +105,7 @@ public class EmployeeViews extends javax.swing.JPanel {
         jLabel6.setForeground(new java.awt.Color(255, 255, 255));
         jLabel6.setText("ID");
         jPanel5.add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 19, 86, -1));
-        jPanel5.add(jtfid, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 10, 120, 25));
+        jPanel5.add(jtfiEmployeeID, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 10, 120, 25));
 
         jLabel4.setFont(new java.awt.Font("Times New Roman", 0, 14)); // NOI18N
         jLabel4.setForeground(new java.awt.Color(255, 255, 255));
@@ -134,17 +143,7 @@ public class EmployeeViews extends javax.swing.JPanel {
                 jbtThemNhanVienActionPerformed(evt);
             }
         });
-        jPanel5.add(jbtThemNhanVien, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 140, -1, -1));
-
-        jbtXoaNhanVien.setFont(new java.awt.Font("Times New Roman", 0, 14)); // NOI18N
-        jbtXoaNhanVien.setForeground(new java.awt.Color(0, 102, 102));
-        jbtXoaNhanVien.setText("Xoá");
-        jbtXoaNhanVien.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jbtXoaNhanVienActionPerformed(evt);
-            }
-        });
-        jPanel5.add(jbtXoaNhanVien, new org.netbeans.lib.awtextra.AbsoluteConstraints(180, 140, -1, -1));
+        jPanel5.add(jbtThemNhanVien, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 140, 70, -1));
 
         jbtSuaNhanVien.setFont(new java.awt.Font("Times New Roman", 0, 14)); // NOI18N
         jbtSuaNhanVien.setForeground(new java.awt.Color(0, 102, 102));
@@ -164,7 +163,7 @@ public class EmployeeViews extends javax.swing.JPanel {
                 jbtLamMoiActionPerformed(evt);
             }
         });
-        jPanel5.add(jbtLamMoi, new org.netbeans.lib.awtextra.AbsoluteConstraints(270, 140, -1, -1));
+        jPanel5.add(jbtLamMoi, new org.netbeans.lib.awtextra.AbsoluteConstraints(270, 140, 100, -1));
         jPanel5.add(jdcDateOfBirth, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 90, 120, -1));
         jPanel5.add(jtffullname, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 50, 120, 25));
 
@@ -176,7 +175,7 @@ public class EmployeeViews extends javax.swing.JPanel {
                 jbtXuatActionPerformed(evt);
             }
         });
-        jPanel5.add(jbtXuat, new org.netbeans.lib.awtextra.AbsoluteConstraints(370, 140, -1, 24));
+        jPanel5.add(jbtXuat, new org.netbeans.lib.awtextra.AbsoluteConstraints(372, 140, 80, 24));
 
         jbtNhap.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jbtNhap.setForeground(new java.awt.Color(0, 102, 102));
@@ -188,17 +187,26 @@ public class EmployeeViews extends javax.swing.JPanel {
         });
         jPanel5.add(jbtNhap, new org.netbeans.lib.awtextra.AbsoluteConstraints(460, 140, -1, 24));
 
-        j1.add(jPanel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 286, 540, 170));
-
-        jbtTimKiem.setBackground(new java.awt.Color(0, 102, 102));
-        jbtTimKiem.setForeground(new java.awt.Color(255, 255, 255));
-        jbtTimKiem.setText("Tìm kiếm");
-        jbtTimKiem.addActionListener(new java.awt.event.ActionListener() {
+        jbtRSMatKhau.setForeground(new java.awt.Color(0, 102, 102));
+        jbtRSMatKhau.setText("RS Mật khẩu");
+        jbtRSMatKhau.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jbtTimKiemActionPerformed(evt);
+                jbtRSMatKhauActionPerformed(evt);
             }
         });
-        j1.add(jbtTimKiem, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 90, -1));
+        jPanel5.add(jbtRSMatKhau, new org.netbeans.lib.awtextra.AbsoluteConstraints(160, 140, -1, -1));
+
+        j1.add(jPanel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 286, 540, 170));
+
+        jbtThongBao.setBackground(new java.awt.Color(0, 102, 102));
+        jbtThongBao.setForeground(new java.awt.Color(255, 255, 255));
+        jbtThongBao.setText("Thông báo");
+        jbtThongBao.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jbtThongBaoActionPerformed(evt);
+            }
+        });
+        j1.add(jbtThongBao, new org.netbeans.lib.awtextra.AbsoluteConstraints(430, 0, 100, -1));
 
         jcbbTimKiem.setBackground(new java.awt.Color(0, 102, 102));
         jcbbTimKiem.setForeground(new java.awt.Color(255, 255, 255));
@@ -215,18 +223,28 @@ public class EmployeeViews extends javax.swing.JPanel {
                 jtfTimKiemKeyPressed(evt);
             }
         });
-        j1.add(jtfTimKiem, new org.netbeans.lib.awtextra.AbsoluteConstraints(220, 0, 310, -1));
+        j1.add(jtfTimKiem, new org.netbeans.lib.awtextra.AbsoluteConstraints(220, 0, 200, -1));
+
+        jbtTimKiem1.setBackground(new java.awt.Color(0, 102, 102));
+        jbtTimKiem1.setForeground(new java.awt.Color(255, 255, 255));
+        jbtTimKiem1.setText("Tìm kiếm");
+        jbtTimKiem1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jbtTimKiem1ActionPerformed(evt);
+            }
+        });
+        j1.add(jbtTimKiem1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 90, -1));
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 540, Short.MAX_VALUE)
+            .addGap(0, 548, Short.MAX_VALUE)
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(layout.createSequentialGroup()
-                    .addGap(0, 0, Short.MAX_VALUE)
+                    .addGap(0, 4, Short.MAX_VALUE)
                     .addComponent(j1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGap(0, 0, Short.MAX_VALUE)))
+                    .addGap(0, 4, Short.MAX_VALUE)))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -242,7 +260,7 @@ public class EmployeeViews extends javax.swing.JPanel {
     private void jbtThemNhanVienActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbtThemNhanVienActionPerformed
         try {
             // Lấy dữ liệu từ các trường nhập
-            String id = jtfid.getText().trim();
+            String id = jtfiEmployeeID.getText().trim();
             String ten = jtffullname.getText().trim();
             String email = jtfEmail.getText().trim();
             String address = jtfAddress.getText().trim();
@@ -288,7 +306,6 @@ public class EmployeeViews extends javax.swing.JPanel {
             }
 
             LocalDate ngaySinh = ngaySinhDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-            //Chuyển kiểu dữ liệu Date sang LocalDate(java.time)
             int namSinh = ngaySinh.getYear();
 
             // Kiểm tra năm sinh trong khoảng từ 1950 đến 2008
@@ -332,7 +349,7 @@ public class EmployeeViews extends javax.swing.JPanel {
             String defaultPassword = "88888888";
             String hashedPassword = HashPassword.hashPassword(defaultPassword);
 
-            // Thực hiện câu lệnh SQL để thêm nhân viên vào bảng
+            // Thực hiện câu lệnh SQL để thêm nhân viên vào bảng employees
             String sql = "INSERT INTO employees (employee_id, full_name, email, phone_number, address, date_of_birth) VALUES (?, ?, ?, ?, ?, ?)";
             PreparedStatement ps = conn.prepareStatement(sql);
             ps.setString(1, id);
@@ -353,13 +370,14 @@ public class EmployeeViews extends javax.swing.JPanel {
                 psChamCong.executeUpdate();
                 psChamCong.close();
 
-                // Thêm tài khoản cho nhân viên vào bảng account với mật khẩu đã mã hóa
-                String sqlAccount = "INSERT INTO accounts (employee_id, username, password, email) VALUES (?, ?, ?, ?)";
+                // Thêm tài khoản cho nhân viên vào bảng accounts với role_id mặc định là 0 (Unactive)
+                String sqlAccount = "INSERT INTO accounts (employee_id, username, password, email, role_id) VALUES (?, ?, ?, ?, ?)";
                 PreparedStatement psAccount = conn.prepareStatement(sqlAccount);
                 psAccount.setString(1, id);
                 psAccount.setString(2, email);
                 psAccount.setString(3, hashedPassword);
                 psAccount.setString(4, email);
+                psAccount.setInt(5, 0); // Gán role_id = 0 (Unactive)
                 psAccount.executeUpdate();
                 psAccount.close();
             } else {
@@ -381,218 +399,199 @@ public class EmployeeViews extends javax.swing.JPanel {
         }
     }//GEN-LAST:event_jbtThemNhanVienActionPerformed
 
-    private void jbtXoaNhanVienActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbtXoaNhanVienActionPerformed
-// Lấy các hàng được chọn
-        int[] selectedRows = jtbEmployee.getSelectedRows();
-
-        // Kiểm tra xem có hàng nào được chọn không
-        if (selectedRows.length == 0) {
-            JOptionPane.showMessageDialog(this, "Vui lòng chọn ít nhất một dòng để xóa.", "Lỗi", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-
-        // Xác nhận việc xóa
-        int confirm = JOptionPane.showConfirmDialog(this,
-                "Bạn có chắc chắn muốn xóa các bản ghi đã chọn?",
-                "Xác nhận",
-                JOptionPane.YES_NO_OPTION);
-
-        if (confirm != JOptionPane.YES_OPTION) {
-            return;
-        }
-
-        // Lấy mô hình bảng
-        DefaultTableModel model = (DefaultTableModel) jtbEmployee.getModel();
-
-        try (Connection conn = new DatabaseConnection().getJDBCConnection()) {
-            conn.setAutoCommit(false); // Bắt đầu transaction
-
-            // Câu lệnh SQL xóa dữ liệu từ các bảng liên quan
-            String deleteAccountsSql = "DELETE FROM accounts WHERE employee_id = ?";
-            String deleteSalariesSql = "DELETE FROM salaries WHERE employee_id = ?";
-            String deleteAttendancesSql = "DELETE FROM attendances WHERE employee_id = ?";
-            String deleteEmployeeSql = "DELETE FROM employees WHERE employee_id = ?";
-
-            try (PreparedStatement psAccounts = conn.prepareStatement(deleteAccountsSql); PreparedStatement psSalaries = conn.prepareStatement(deleteSalariesSql); PreparedStatement psAttendances = conn.prepareStatement(deleteAttendancesSql); PreparedStatement psEmployee = conn.prepareStatement(deleteEmployeeSql)) {
-
-                // Duyệt qua tất cả các hàng đã chọn để xóa từng nhân viên
-                for (int rowIndex : selectedRows) {
-                    Object employeeIdObj = model.getValueAt(rowIndex, 0); // Cột 0 chứa employee_id
-                    String employeeId = (employeeIdObj instanceof Integer) ? String.valueOf(employeeIdObj) : (String) employeeIdObj;
-
-                    // Xóa từ bảng accounts
-                    psAccounts.setString(1, employeeId);
-                    psAccounts.executeUpdate();
-
-                    // Xóa từ bảng salaries
-                    psSalaries.setString(1, employeeId);
-                    psSalaries.executeUpdate();
-
-                    // Xóa từ bảng attendance
-                    psAttendances.setString(1, employeeId);
-                    psAttendances.executeUpdate();
-
-                    // Xóa từ bảng employees
-                    psEmployee.setString(1, employeeId);
-                    psEmployee.executeUpdate();
-                }
-
-                conn.commit(); // Xác nhận transaction
-                JOptionPane.showMessageDialog(this, "Xóa thành công!");
-
-                // Xóa các dòng khỏi bảng giao diện
-                for (int i = selectedRows.length - 1; i >= 0; i--) {
-                    model.removeRow(selectedRows[i]);
-                }
-
-            } catch (SQLException e) {
-                conn.rollback(); // Hoàn tác nếu có lỗi xảy ra
-                JOptionPane.showMessageDialog(this, "Lỗi khi xóa: " + e.getMessage(), "Lỗi", JOptionPane.ERROR_MESSAGE);
-            }
-        } catch (SQLException e) {
-            JOptionPane.showMessageDialog(this, "Lỗi kết nối cơ sở dữ liệu: " + e.getMessage(), "Lỗi", JOptionPane.ERROR_MESSAGE);
-        }
-    }//GEN-LAST:event_jbtXoaNhanVienActionPerformed
-
     private void jbtSuaNhanVienActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbtSuaNhanVienActionPerformed
-        int selectedRow = jtbEmployee.getSelectedRow();
+    int selectedRow = jtbEmployee.getSelectedRow();
 
-        if (selectedRow == -1) {
-            JOptionPane.showMessageDialog(this, "Vui lòng chọn một dòng để sửa.", "Lỗi", JOptionPane.ERROR_MESSAGE);
-            return;
+    if (selectedRow == -1) {
+        JOptionPane.showMessageDialog(this, "Vui lòng chọn một dòng để sửa.", "Lỗi", JOptionPane.ERROR_MESSAGE);
+        return;
+    }
+
+    DefaultTableModel model = (DefaultTableModel) jtbEmployee.getModel();
+    String employeeId = model.getValueAt(selectedRow, 0).toString();
+    String ten = (String) model.getValueAt(selectedRow, 1);
+    String email = (String) model.getValueAt(selectedRow, 2);
+    String soDienThoai = (String) model.getValueAt(selectedRow, 3);
+    String diaChi = (String) model.getValueAt(selectedRow, 4);
+    String ngaySinh = (String) model.getValueAt(selectedRow, 5);
+    String roleName = model.getValueAt(selectedRow, 6).toString(); // Lấy role_name thay vì role_id
+
+    JTextField txtEmployeeId = new JTextField(employeeId);
+    txtEmployeeId.setEditable(false);
+    JTextField txtTen = new JTextField(ten);
+    JTextField txtEmail = new JTextField(email);
+    JTextField txtSoDienThoai = new JTextField(soDienThoai);
+    JTextField txtDiaChi = new JTextField(diaChi);
+
+    JDateChooser dateChooser = new JDateChooser();
+    dateChooser.setDateFormatString("dd/MM/yyyy");
+    try {
+        if (ngaySinh != null && !ngaySinh.isEmpty() && !ngaySinh.equals("N/A")) {
+            SimpleDateFormat sdfInput = new SimpleDateFormat("dd/MM/yyyy");
+            Date parsedDate = sdfInput.parse(ngaySinh);
+            dateChooser.setDate(parsedDate);
         }
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
 
-        // Lấy dữ liệu từ bảng
-        DefaultTableModel model = (DefaultTableModel) jtbEmployee.getModel();
-        String employeeId = model.getValueAt(selectedRow, 0).toString();
-        String ten = (String) model.getValueAt(selectedRow, 1);
-        String Email = (String) model.getValueAt(selectedRow, 2);
-        String soDienThoai = (String) model.getValueAt(selectedRow, 3);
-        String diaChi = (String) model.getValueAt(selectedRow, 4);
-        String ngaySinh = (String) model.getValueAt(selectedRow, 5);
-        String roleId = model.getValueAt(selectedRow, 6).toString(); // Lấy role_id
+    // Cập nhật JComboBox để chỉ hiển thị "Unactive" và "Employee"
+    JComboBox<String> cboRole = new JComboBox<>();
+    cboRole.addItem("Unactive");
+    cboRole.addItem("Employee");
+    cboRole.setSelectedItem(roleName);
 
-        // Tạo các trường để sửa thông tin
-        JTextField txtEmployeeId = new JTextField(employeeId);
-        txtEmployeeId.setEditable(false);  // Đặt chỉ đọc cho ô mã nhân viên
-        JTextField txtTen = new JTextField(ten);
-        JTextField txtEmail = new JTextField(Email);
-        JTextField txtSoDienThoai = new JTextField(soDienThoai);
-        JTextField txtDiaChi = new JTextField(diaChi);
+    JPanel panel = new JPanel(new GridLayout(0, 2));
+    panel.add(new JLabel("Employee ID:"));
+    panel.add(txtEmployeeId);
+    panel.add(new JLabel("Full Name:"));
+    panel.add(txtTen);
+    panel.add(new JLabel("Email:"));
+    panel.add(txtEmail);
+    panel.add(new JLabel("Phone Number:"));
+    panel.add(txtSoDienThoai);
+    panel.add(new JLabel("Address:"));
+    panel.add(txtDiaChi);
+    panel.add(new JLabel("Date of Birth (dd/MM/yyyy):"));
+    panel.add(dateChooser);
+    panel.add(new JLabel("Role:"));
+    panel.add(cboRole);
 
-        // Sử dụng JDateChooser để chọn ngày sinh
-        JDateChooser dateChooser = new JDateChooser();
-        dateChooser.setDateFormatString("dd/MM/yyyy");  // Định dạng ngày hiển thị cho người dùng
+    int result = JOptionPane.showConfirmDialog(this, panel, "Sửa thông tin", JOptionPane.OK_CANCEL_OPTION);
+
+    if (result == JOptionPane.OK_OPTION) {
         try {
-            if (ngaySinh != null && !ngaySinh.isEmpty()) {
-                SimpleDateFormat sdfInput = new SimpleDateFormat("dd/MM/yyyy");
-                Date parsedDate = sdfInput.parse(ngaySinh);
-                SimpleDateFormat sdfOutput = new SimpleDateFormat("yyyy-MM-dd");
-                dateChooser.setDate(parsedDate); // Đặt lại ngày sinh đã được chuyển đổi
+            String newTen = txtTen.getText().trim();
+            String newEmail = txtEmail.getText().trim();
+            String newSoDienThoai = txtSoDienThoai.getText().trim();
+            String newDiaChi = txtDiaChi.getText().trim();
+
+            // Kiểm tra các trường không được để trống
+            if (newTen.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Tên nhân viên không được để trống", "Lỗi", JOptionPane.ERROR_MESSAGE);
+                return;
             }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+            if (newEmail.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Email không được để trống", "Lỗi", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            if (newSoDienThoai.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Số điện thoại không được để trống", "Lỗi", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
 
-        // Chọn role_id từ ComboBox
-        JComboBox<String> cboRole = new JComboBox<>();
-        cboRole.addItem("Admin");
-        cboRole.addItem("Employee");
-        cboRole.setSelectedItem(roleId);  // Chọn role hiện tại của nhân viên
+            // Validate email
+            String emailPattern = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,6}$";
+            if (!newEmail.matches(emailPattern)) {
+                JOptionPane.showMessageDialog(this, "Email không đúng định dạng, vui lòng nhập lại!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
 
-        JPanel panel = new JPanel(new GridLayout(0, 2));
-        panel.add(new JLabel("Employee ID:"));
-        panel.add(txtEmployeeId);
-        panel.add(new JLabel("Full Name:"));
-        panel.add(txtTen);
-        panel.add(new JLabel("Email:"));
-        panel.add(txtEmail);
-        panel.add(new JLabel("Phone Number:"));
-        panel.add(txtSoDienThoai);
-        panel.add(new JLabel("Address:"));
-        panel.add(txtDiaChi);
-        panel.add(new JLabel("Date of Birth (dd/MM/yyyy):"));
-        panel.add(dateChooser);
-        panel.add(new JLabel("Role:"));
-        panel.add(cboRole);
+            // Validate phone number
+            String phonePattern = "^[0-9]{10,11}$";
+            if (!newSoDienThoai.matches(phonePattern)) {
+                JOptionPane.showMessageDialog(this, "Số điện thoại không đúng định dạng (chỉ gồm số và có độ dài 10-11 chữ số)!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
 
-        int result = JOptionPane.showConfirmDialog(this, panel, "Sửa thông tin", JOptionPane.OK_CANCEL_OPTION);
+            // Kiểm tra ngày sinh
+            Date newNgaySinhDate = dateChooser.getDate();
+            if (newNgaySinhDate == null) {
+                JOptionPane.showMessageDialog(this, "Vui lòng chọn ngày sinh!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            LocalDate newNgaySinhLocal = newNgaySinhDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+            int namSinh = newNgaySinhLocal.getYear();
+            if (namSinh < 1950 || namSinh > 2008) {
+                JOptionPane.showMessageDialog(this, "Năm sinh chỉ được nằm trong khoảng 1950-2008!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
 
-        if (result == JOptionPane.OK_OPTION) {
-            try {
-                // Kiểm tra nếu Số điện thoại và Email trống
-                String newSoDienThoai = txtSoDienThoai.getText().trim();
-                String newEmail = txtEmail.getText().trim();
-
-                if (newSoDienThoai.isEmpty()) {
-                    JOptionPane.showMessageDialog(this, "Vui lòng nhập số điện thoại!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+            // Kiểm tra trùng email và số điện thoại (trừ bản ghi hiện tại)
+            try (Connection conn = new DatabaseConnection().getJDBCConnection()) {
+                // Kiểm tra email
+                String checkEmailSQL = "SELECT COUNT(*) FROM employees WHERE email = ? AND employee_id != ?";
+                PreparedStatement psCheckEmail = conn.prepareStatement(checkEmailSQL);
+                psCheckEmail.setString(1, newEmail);
+                psCheckEmail.setString(2, employeeId);
+                ResultSet rsEmail = psCheckEmail.executeQuery();
+                rsEmail.next();
+                if (rsEmail.getInt(1) > 0) {
+                    JOptionPane.showMessageDialog(this, "Email này đã tồn tại, vui lòng chọn email khác!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+                    rsEmail.close();
+                    psCheckEmail.close();
                     return;
                 }
-                if (newEmail.isEmpty()) {
-                    JOptionPane.showMessageDialog(this, "Vui lòng nhập email!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+                rsEmail.close();
+                psCheckEmail.close();
+
+                // Kiểm tra số điện thoại
+                String checkPhoneSQL = "SELECT COUNT(*) FROM employees WHERE phone_number = ? AND employee_id != ?";
+                PreparedStatement psCheckPhone = conn.prepareStatement(checkPhoneSQL);
+                psCheckPhone.setString(1, newSoDienThoai);
+                psCheckPhone.setString(2, employeeId);
+                ResultSet rsPhone = psCheckPhone.executeQuery();
+                rsPhone.next();
+                if (rsPhone.getInt(1) > 0) {
+                    JOptionPane.showMessageDialog(this, "Số điện thoại này đã tồn tại, vui lòng chọn số điện thoại khác!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+                    rsPhone.close();
+                    psCheckPhone.close();
                     return;
                 }
-                // Thiết lập các trường rỗng thành "N/A"
-                String newTen = txtTen.getText().trim();
-                String newNgaySinh = null;
+                rsPhone.close();
+                psCheckPhone.close();
 
-                // Nếu người dùng đã chọn ngày mới trong JDateChooser, lấy giá trị đó
-                if (dateChooser.getDate() != null) {
-                    SimpleDateFormat sdfOutput = new SimpleDateFormat("yyyy-MM-dd");
-                    newNgaySinh = sdfOutput.format(dateChooser.getDate()); // Chuyển ngày sang định dạng yyyy-MM-dd
-                }
-                String newDiaChi = txtDiaChi.getText().trim();
-                String newRole = (String) cboRole.getSelectedItem();
+                // Cập nhật dữ liệu
+                conn.setAutoCommit(false);
 
-                // Cập nhật dữ liệu vào bảng employees
                 String sqlUpdateEmployee = "UPDATE employees SET full_name = ?, email = ?, phone_number = ?, address = ?, date_of_birth = ? WHERE employee_id = ?";
-                try (Connection conn = new DatabaseConnection().getJDBCConnection(); PreparedStatement psEmployee = conn.prepareStatement(sqlUpdateEmployee)) {
-
+                try (PreparedStatement psEmployee = conn.prepareStatement(sqlUpdateEmployee)) {
                     psEmployee.setString(1, newTen);
                     psEmployee.setString(2, newEmail);
                     psEmployee.setString(3, newSoDienThoai);
                     psEmployee.setString(4, newDiaChi);
-                    psEmployee.setString(5, newNgaySinh);  // Ngày đã được chuyển sang định dạng yyyy-MM-dd
+                    psEmployee.setString(5, new SimpleDateFormat("yyyy-MM-dd").format(newNgaySinhDate));
                     psEmployee.setString(6, employeeId);
                     int updateResult = psEmployee.executeUpdate();
 
                     if (updateResult > 0) {
-                        // Cập nhật dữ liệu trong bảng UI
+                        String sqlUpdateAccount = "UPDATE accounts SET email = ?, role_id = ? WHERE employee_id = ?";
+                        try (PreparedStatement psAccount = conn.prepareStatement(sqlUpdateAccount)) {
+                            psAccount.setString(1, newEmail);
+                            int newRoleId = cboRole.getSelectedItem().equals("Unactive") ? 0 : 2; // Chỉ có Unactive (0) hoặc Employee (2)
+                            psAccount.setInt(2, newRoleId);
+                            psAccount.setString(3, employeeId);
+                            psAccount.executeUpdate();
+                        }
+
                         model.setValueAt(newTen, selectedRow, 1);
                         model.setValueAt(newEmail, selectedRow, 2);
                         model.setValueAt(newSoDienThoai, selectedRow, 3);
                         model.setValueAt(newDiaChi, selectedRow, 4);
-                        model.setValueAt(newNgaySinh, selectedRow, 5);
-                        model.setValueAt(newRole, selectedRow, 6);  // Cập nhật role_id
+                        model.setValueAt(new SimpleDateFormat("dd/MM/yyyy").format(newNgaySinhDate), selectedRow, 5);
+                        model.setValueAt(cboRole.getSelectedItem(), selectedRow, 6);
 
-                        // Cập nhật bảng accounts với role mới
-                        String sqlUpdateRole = "UPDATE accounts SET role_id = ? WHERE employee_id = ?";
-                        try (PreparedStatement psRole = conn.prepareStatement(sqlUpdateRole)) {
-                            psRole.setString(1, newRole.equals("Admin") ? "1" : "2");
-                            psRole.setString(2, employeeId);
-                            psRole.executeUpdate();
-                        } catch (SQLException e) {
-                            e.printStackTrace();
-                        }
-
+                        conn.commit();
                         JOptionPane.showMessageDialog(this, "Cập nhật thành công!");
                     } else {
+                        conn.rollback();
                         JOptionPane.showMessageDialog(this, "Cập nhật không thành công!", "Lỗi", JOptionPane.ERROR_MESSAGE);
                     }
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                    JOptionPane.showMessageDialog(this, "Lỗi khi cập nhật thông tin nhân viên: " + e.getMessage(), "Lỗi", JOptionPane.ERROR_MESSAGE);
                 }
-            } catch (Exception e) {
+            } catch (SQLException e) {
                 e.printStackTrace();
-                JOptionPane.showMessageDialog(this, "Lỗi: " + e.getMessage(), "Lỗi", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Lỗi khi cập nhật thông tin: " + e.getMessage(), "Lỗi", JOptionPane.ERROR_MESSAGE);
             }
+        } catch (Exception e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Lỗi: " + e.getMessage(), "Lỗi", JOptionPane.ERROR_MESSAGE);
         }
+    }
     }//GEN-LAST:event_jbtSuaNhanVienActionPerformed
 
     private void jbtLamMoiActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbtLamMoiActionPerformed
         hienthi();
-        jtfid.setText("");
+        jtfiEmployeeID.setText("");
         jtffullname.setText("");
         jtfPhone.setText("");
         jdcDateOfBirth.setDate(null);
@@ -600,134 +599,205 @@ public class EmployeeViews extends javax.swing.JPanel {
         jtfAddress.setText("");
     }//GEN-LAST:event_jbtLamMoiActionPerformed
 
-    private void jbtTimKiemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbtTimKiemActionPerformed
-        String searchText = jtfTimKiem.getText().trim();
-        String searchCriteria = jcbbTimKiem.getSelectedItem().toString();
+    private void jbtThongBaoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbtThongBaoActionPerformed
+        // Tạo dialog hiển thị yêu cầu sửa thông tin
+    Window parentWindow = SwingUtilities.getWindowAncestor(this);
+    if (parentWindow == null || !(parentWindow instanceof Frame)) {
+        JOptionPane.showMessageDialog(this, "Không tìm thấy container cha hợp lệ!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+        return;
+    }
 
-        // Kiểm tra nếu người dùng không nhập từ khóa tìm kiếm
-        if (searchText.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Vui lòng nhập từ khóa tìm kiếm!");
-            return;
-        }
+    // Ép kiểu Window thành Frame
+    Frame parentFrame = (Frame) parentWindow;
 
-        // Kiểm tra nếu tiêu chí tìm kiếm không hợp lệ
-        if (!validateSearchCriteria(searchCriteria, searchText)) {
-            JOptionPane.showMessageDialog(this, "Dữ liệu tìm kiếm không hợp lệ!");
-            return;
-        }
+    // Tạo dialog hiển thị yêu cầu sửa thông tin
+    JDialog notificationDialog = new JDialog(parentFrame, "Thông báo yêu cầu sửa thông tin", true);
+    notificationDialog.setSize(600, 400);
+    notificationDialog.setLayout(new BorderLayout());
+    notificationDialog.setLocationRelativeTo(parentFrame);
 
-        Connection conn = null;
-        PreparedStatement ps = null;
-        ResultSet rs = null;
+        // Truy vấn danh sách yêu cầu từ change_requests
+        String sql = "SELECT cr.request_id, e.full_name, cr.field_name, cr.old_value, cr.new_value, cr.request_date " +
+                     "FROM change_requests cr " +
+                     "JOIN employees e ON cr.employee_id = e.employee_id " +
+                     "WHERE cr.status = 'pending'";
+        
+        DefaultTableModel model = new DefaultTableModel(
+            new String[]{"ID", "Tên nhân viên", "Trường", "Giá trị cũ", "Giá trị mới", "Ngày gửi"}, 0
+        );
+        JTable requestTable = new JTable(model);
 
-        try {
-            conn = new DatabaseConnection().getJDBCConnection();
-            if (conn == null) {
-                JOptionPane.showMessageDialog(this, "Không thể kết nối đến cơ sở dữ liệu.", "Lỗi", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-
-            String sql = "";
-
-            // Khởi tạo câu truy vấn dựa trên tiêu chí tìm kiếm
-            if ("ID".equals(searchCriteria)) {
-                try {
-                    Integer.parseInt(searchText);
-                } catch (NumberFormatException e) {
-                    JOptionPane.showMessageDialog(this, "EmployeeID phải là một số nguyên!");
-                    return;
-                }
-                sql = "SELECT e.employee_id, e.full_name, e.email, e.phone_number, e.address, e.date_of_birth, a.role_id "
-                        + "FROM employees e LEFT JOIN accounts a ON e.employee_id = a.employee_id WHERE e.employee_id = ?";
-                ps = conn.prepareStatement(sql);
-                ps.setInt(1, Integer.parseInt(searchText));
-            } else if ("Full Name".equals(searchCriteria)) {
-                sql = "SELECT e.employee_id, e.full_name, e.email, e.phone_number, e.address, e.date_of_birth, a.role_id "
-                        + "FROM employees e LEFT JOIN accounts a ON e.employee_id = a.employee_id WHERE e.full_name LIKE ?";
-                ps = conn.prepareStatement(sql);
-                ps.setString(1, "%" + searchText + "%");
-            } else if ("Phone Number".equals(searchCriteria)) {
-                sql = "SELECT e.employee_id, e.full_name, e.email, e.phone_number, e.address, e.date_of_birth, a.role_id "
-                        + "FROM employees e LEFT JOIN accounts a ON e.employee_id = a.employee_id WHERE e.phone_number LIKE ?";
-                ps = conn.prepareStatement(sql);
-                ps.setString(1, "%" + searchText + "%");
-            } else if ("Email".equals(searchCriteria)) {
-                sql = "SELECT e.employee_id, e.full_name, e.email, e.phone_number, e.address, e.date_of_birth, a.role_id "
-                        + "FROM employees e LEFT JOIN accounts a ON e.employee_id = a.employee_id WHERE e.email LIKE ?";
-                ps = conn.prepareStatement(sql);
-                ps.setString(1, "%" + searchText + "%");
-            } else if ("Address".equals(searchCriteria)) {
-                sql = "SELECT e.employee_id, e.full_name, e.email, e.phone_number, e.address, e.date_of_birth, a.role_id "
-                        + "FROM employees e LEFT JOIN accounts a ON e.employee_id = a.employee_id WHERE e.address LIKE ?";
-                ps = conn.prepareStatement(sql);
-                ps.setString(1, "%" + searchText + "%");
-            }
-
-            if (ps == null) {
-                JOptionPane.showMessageDialog(this, "Tiêu chí tìm kiếm không hợp lệ.");
-                return;
-            }
-
-            rs = ps.executeQuery();
-
-            // Tạo model mới cho bảng với các cột yêu cầu
-            DefaultTableModel model = new DefaultTableModel(
-                    new String[]{"EmployeeID", "Full Name", "Email", "Phone Number", "Address", "Date of Birth", "Role"},
-                    0
-            );
-
-            SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
-
+        try (Connection conn = new DatabaseConnection().getJDBCConnection();
+             PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
-                int employeeId = rs.getInt("employee_id");
-                String fullName = rs.getString("full_name");
-                String email = rs.getString("email");
-                String phoneNumber = rs.getString("phone_number");
-
-                // Kiểm tra và xử lý cột Address
-                String address = rs.getString("address");
-                address = (address != null) ? address : "N/A";
-
-                Date dateOfBirth = rs.getDate("date_of_birth");
-                String dob = (dateOfBirth != null) ? sdf.format(dateOfBirth) : "N/A";
-
-                // Xử lý cột Role
-                int roleId = rs.getInt("role_id");
-                String role = (roleId == 1) ? "Admin" : (roleId == 2) ? "Employee" : "N/A";
-
-                // Thêm hàng vào model
                 model.addRow(new Object[]{
-                    employeeId, fullName, email, phoneNumber, address, dob, role
+                    rs.getInt("request_id"),
+                    rs.getString("full_name"),
+                    convertFieldNameToDisplay(rs.getString("field_name")),
+                    rs.getString("old_value") != null ? rs.getString("old_value") : "N/A",
+                    rs.getString("new_value"),
+                    rs.getString("request_date")
                 });
             }
-
-            jtbEmployee.setModel(model);
-
-            // Kiểm tra nếu không có kết quả nào
-            if (model.getRowCount() == 0) {
-                JOptionPane.showMessageDialog(this, "Không tìm thấy kết quả nào!");
-            }
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-            JOptionPane.showMessageDialog(this, "Lỗi khi tìm kiếm: " + e.getMessage());
-        } finally {
-            try {
-                if (rs != null) {
-                    rs.close();
-                }
-                if (ps != null) {
-                    ps.close();
-                }
-                if (conn != null) {
-                    conn.close();
-                }
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Lỗi khi tải danh sách yêu cầu: " + ex.getMessage(), "Lỗi", JOptionPane.ERROR_MESSAGE);
+            return;
         }
-    }//GEN-LAST:event_jbtTimKiemActionPerformed
 
+        // Panel chứa các nút
+        JPanel buttonPanel = new JPanel();
+        JButton btnApprove = new JButton("Xác nhận");
+        JButton btnReject = new JButton("Xóa (Từ chối)");
+        buttonPanel.add(btnApprove);
+        buttonPanel.add(btnReject);
+
+        // Thêm các thành phần vào dialog
+        notificationDialog.add(new JScrollPane(requestTable), BorderLayout.CENTER);
+        notificationDialog.add(buttonPanel, BorderLayout.SOUTH);
+
+        // Xử lý nút Xác nhận
+        btnApprove.addActionListener(e -> {
+            int selectedRow = requestTable.getSelectedRow();
+            if (selectedRow == -1) {
+                JOptionPane.showMessageDialog(notificationDialog, "Vui lòng chọn một yêu cầu để xác nhận!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            int requestId = (int) model.getValueAt(selectedRow, 0);
+            String fieldName = convertFieldNameToDB((String) model.getValueAt(selectedRow, 2));
+            String newValue = (String) model.getValueAt(selectedRow, 4);
+            String employeeName = (String) model.getValueAt(selectedRow, 1);
+
+            // Lấy employee_id từ tên nhân viên
+            int employeeId = getEmployeeIdFromName(employeeName);
+            if (employeeId == -1) {
+                JOptionPane.showMessageDialog(notificationDialog, "Không tìm thấy nhân viên!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            boolean success = approveChangeRequest(employeeId, requestId, fieldName, newValue);
+            if (success) {
+                model.removeRow(selectedRow);
+                JOptionPane.showMessageDialog(notificationDialog, "Yêu cầu đã được xác nhận!", "Thành công", JOptionPane.INFORMATION_MESSAGE);
+            }
+        });
+
+        // Xử lý nút Xóa (Từ chối)
+        btnReject.addActionListener(e -> {
+            int selectedRow = requestTable.getSelectedRow();
+            if (selectedRow == -1) {
+                JOptionPane.showMessageDialog(notificationDialog, "Vui lòng chọn một yêu cầu để từ chối!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            int requestId = (int) model.getValueAt(selectedRow, 0);
+            String rejectReason = JOptionPane.showInputDialog(notificationDialog, "Nhập lý do từ chối:");
+            if (rejectReason != null && !rejectReason.trim().isEmpty()) {
+                boolean success = rejectChangeRequest(requestId, rejectReason);
+                if (success) {
+                    model.removeRow(selectedRow);
+                    JOptionPane.showMessageDialog(notificationDialog, "Yêu cầu đã bị từ chối!", "Thành công", JOptionPane.INFORMATION_MESSAGE);
+                }
+            }
+        });
+
+        // Hiển thị dialog
+        notificationDialog.setVisible(true);
+    }//GEN-LAST:event_jbtThongBaoActionPerformed
+
+    // Hàm chuyển tên trường từ DB sang dạng hiển thị
+// Các phương thức hỗ trợ
+    private String convertFieldNameToDisplay(String dbFieldName) {
+        switch (dbFieldName) {
+            case "full_name": return "Full Name";
+            case "email": return "Email";
+            case "phone_number": return "Phone Number";
+            case "address": return "Address";
+            case "date_of_birth": return "Date of Birth";
+            default: return dbFieldName;
+        }
+    }
+
+    private String convertFieldNameToDB(String displayName) {
+        switch (displayName) {
+            case "Full Name": return "full_name";
+            case "Email": return "email";
+            case "Phone Number": return "phone_number";
+            case "Address": return "address";
+            case "Date of Birth": return "date_of_birth";
+            default: return displayName;
+        }
+    }
+
+    private int getEmployeeIdFromName(String fullName) {
+        String sql = "SELECT employee_id FROM employees WHERE full_name = ?";
+        try (Connection conn = new DatabaseConnection().getJDBCConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, fullName);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getInt("employee_id");
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+        return -1;
+    }
+
+    private boolean approveChangeRequest(int employeeId, int requestId, String fieldName, String newValue) {
+        try (Connection conn = new DatabaseConnection().getJDBCConnection()) {
+            conn.setAutoCommit(false);
+            String sqlUpdateEmployee = "UPDATE employees SET " + fieldName + " = ? WHERE employee_id = ?";
+            try (PreparedStatement psEmployee = conn.prepareStatement(sqlUpdateEmployee)) {
+                psEmployee.setString(1, newValue);
+                psEmployee.setInt(2, employeeId);
+                int rowsAffected = psEmployee.executeUpdate();
+
+                if (rowsAffected > 0) {
+                    if (fieldName.equals("email")) {
+                        String sqlUpdateAccount = "UPDATE accounts SET email = ? WHERE employee_id = ?";
+                        try (PreparedStatement psAccount = conn.prepareStatement(sqlUpdateAccount)) {
+                            psAccount.setString(1, newValue);
+                            psAccount.setInt(2, employeeId);
+                            psAccount.executeUpdate();
+                        }
+                    }
+                    String sqlUpdateRequest = "UPDATE change_requests SET status = 'approved' WHERE request_id = ?";
+                    try (PreparedStatement psRequest = conn.prepareStatement(sqlUpdateRequest)) {
+                        psRequest.setInt(1, requestId);
+                        psRequest.executeUpdate();
+                    }
+                    conn.commit();
+                    return true;
+                } else {
+                    conn.rollback();
+                    return false;
+                }
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Lỗi khi xác nhận yêu cầu: " + ex.getMessage(), "Lỗi", JOptionPane.ERROR_MESSAGE);
+            return false;
+        }
+    }
+
+    private boolean rejectChangeRequest(int requestId, String reason) {
+        String sql = "UPDATE change_requests SET status = 'rejected', admin_comment = ? WHERE request_id = ?";
+        try (Connection conn = new DatabaseConnection().getJDBCConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, reason);
+            ps.setInt(2, requestId);
+            int rowsAffected = ps.executeUpdate();
+            return rowsAffected > 0;
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Lỗi khi từ chối yêu cầu: " + ex.getMessage(), "Lỗi", JOptionPane.ERROR_MESSAGE);
+            return false;
+        }
+    }
+    
     private void jcbbTimKiemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jcbbTimKiemActionPerformed
         jtfTimKiem.setText("");
         jtfTimKiem.requestFocus();
@@ -735,7 +805,7 @@ public class EmployeeViews extends javax.swing.JPanel {
 
     private void jtfTimKiemKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jtfTimKiemKeyPressed
         if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
-            jbtTimKiem.doClick();
+            jbtThongBao.doClick();
         }
     }//GEN-LAST:event_jtfTimKiemKeyPressed
 
@@ -922,6 +992,167 @@ public class EmployeeViews extends javax.swing.JPanel {
         }
     }//GEN-LAST:event_jbtNhapActionPerformed
 
+    private void jbtTimKiem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbtTimKiem1ActionPerformed
+        String searchText = jtfTimKiem.getText().trim();
+        String searchCriteria = jcbbTimKiem.getSelectedItem().toString();
+
+        if (searchText.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Vui lòng nhập từ khóa tìm kiếm!");
+            return;
+        }
+
+        if (!validateSearchCriteria(searchCriteria, searchText)) {
+            JOptionPane.showMessageDialog(this, "Dữ liệu tìm kiếm không hợp lệ!");
+            return;
+        }
+
+        Connection conn = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+
+        try {
+            conn = new DatabaseConnection().getJDBCConnection();
+            if (conn == null) {
+                JOptionPane.showMessageDialog(this, "Không thể kết nối đến cơ sở dữ liệu.", "Lỗi", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            String sql = "";
+            if ("ID".equals(searchCriteria)) {
+                try {
+                    Integer.parseInt(searchText);
+                } catch (NumberFormatException e) {
+                    JOptionPane.showMessageDialog(this, "EmployeeID phải là một số nguyên!");
+                    return;
+                }
+                sql = "SELECT e.employee_id, e.full_name, e.email, e.phone_number, e.address, e.date_of_birth, a.role_id "
+                        + "FROM employees e LEFT JOIN accounts a ON e.employee_id = a.employee_id WHERE e.employee_id = ?";
+                ps = conn.prepareStatement(sql);
+                ps.setInt(1, Integer.parseInt(searchText));
+            } else if ("Full Name".equals(searchCriteria)) {
+                sql = "SELECT e.employee_id, e.full_name, e.email, e.phone_number, e.address, e.date_of_birth, a.role_id "
+                        + "FROM employees e LEFT JOIN accounts a ON e.employee_id = a.employee_id WHERE e.full_name LIKE ?";
+                ps = conn.prepareStatement(sql);
+                ps.setString(1, "%" + searchText + "%");
+            } else if ("Phone Number".equals(searchCriteria)) {
+                sql = "SELECT e.employee_id, e.full_name, e.email, e.phone_number, e.address, e.date_of_birth, a.role_id "
+                        + "FROM employees e LEFT JOIN accounts a ON e.employee_id = a.employee_id WHERE e.phone_number LIKE ?";
+                ps = conn.prepareStatement(sql);
+                ps.setString(1, "%" + searchText + "%");
+            } else if ("Email".equals(searchCriteria)) {
+                sql = "SELECT e.employee_id, e.full_name, e.email, e.phone_number, e.address, e.date_of_birth, a.role_id "
+                        + "FROM employees e LEFT JOIN accounts a ON e.employee_id = a.employee_id WHERE e.email LIKE ?";
+                ps = conn.prepareStatement(sql);
+                ps.setString(1, "%" + searchText + "%");
+            } else if ("Address".equals(searchCriteria)) {
+                sql = "SELECT e.employee_id, e.full_name, e.email, e.phone_number, e.address, e.date_of_birth, a.role_id "
+                        + "FROM employees e LEFT JOIN accounts a ON e.employee_id = a.employee_id WHERE e.address LIKE ?";
+                ps = conn.prepareStatement(sql);
+                ps.setString(1, "%" + searchText + "%");
+            }
+
+            if (ps == null) {
+                JOptionPane.showMessageDialog(this, "Tiêu chí tìm kiếm không hợp lệ.");
+                return;
+            }
+
+            rs = ps.executeQuery();
+            DefaultTableModel model = new DefaultTableModel(
+                    new String[]{"EmployeeID", "Full Name", "Email", "Phone Number", "Address", "Date of Birth", "Role"},
+                    0
+            );
+
+            SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+
+            while (rs.next()) {
+                int employeeId = rs.getInt("employee_id");
+                String fullName = rs.getString("full_name");
+                String email = rs.getString("email");
+                String phoneNumber = rs.getString("phone_number");
+
+                String address = rs.getString("address");
+                address = (address != null) ? address : "N/A";
+
+                Date dateOfBirth = rs.getDate("date_of_birth");
+                String dob = (dateOfBirth != null) ? sdf.format(dateOfBirth) : "N/A";
+
+                // Cập nhật hiển thị role_id
+                int roleId = rs.getInt("role_id");
+                String role = rs.wasNull() ? "N/A" : (roleId == 0 ? "Unactive" : roleId == 1 ? "Admin" : roleId == 2 ? "Employee" : "Unknown");
+
+                model.addRow(new Object[]{employeeId, fullName, email, phoneNumber, address, dob, role});
+            }
+
+            jtbEmployee.setModel(model);
+
+            if (model.getRowCount() == 0) {
+                JOptionPane.showMessageDialog(this, "Không tìm thấy kết quả nào!");
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Lỗi khi tìm kiếm: " + e.getMessage());
+        } finally {
+            try {
+                if (rs != null) rs.close();
+                if (ps != null) ps.close();
+                if (conn != null) conn.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+    }//GEN-LAST:event_jbtTimKiem1ActionPerformed
+
+    private void jbtRSMatKhauActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbtRSMatKhauActionPerformed
+        // Giả định jtfEmployeeId là JTextField chứa employee_id
+        String employeeIdText = jtfiEmployeeID.getText().trim();
+        if (employeeIdText.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Vui lòng nhập Employee ID!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        int employeeId;
+        try {
+            employeeId = Integer.parseInt(employeeIdText);
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(this, "Employee ID phải là số nguyên!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        // Xác nhận hành động từ người dùng
+        int confirm = JOptionPane.showConfirmDialog(this, 
+            "Bạn có chắc chắn muốn reset mật khẩu của nhân viên này thành '88888888'?", 
+            "Xác nhận", JOptionPane.YES_NO_OPTION);
+        if (confirm != JOptionPane.YES_OPTION) {
+            return;
+        }
+
+        // Mật khẩu mặc định và mã hóa
+        String defaultPassword = "88888888";
+        String hashedPassword = HashPassword.hashPassword(defaultPassword);
+
+        // Cập nhật mật khẩu trong bảng accounts
+        String sql = "UPDATE accounts SET password = ? WHERE employee_id = ?";
+        try (Connection conn = new DatabaseConnection().getJDBCConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, hashedPassword); // Lưu mật khẩu đã mã hóa
+            ps.setInt(2, employeeId);
+            int rowsAffected = ps.executeUpdate();
+
+            if (rowsAffected > 0) {
+                JOptionPane.showMessageDialog(this, "Reset mật khẩu thành công! Mật khẩu mới: 88888888", 
+                    "Thành công", JOptionPane.INFORMATION_MESSAGE);
+            } else {
+                JOptionPane.showMessageDialog(this, "Không tìm thấy tài khoản để reset mật khẩu!", 
+                    "Lỗi", JOptionPane.ERROR_MESSAGE);
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Lỗi khi reset mật khẩu: " + ex.getMessage(), 
+                "Lỗi", JOptionPane.ERROR_MESSAGE);
+        }
+    }//GEN-LAST:event_jbtRSMatKhauActionPerformed
+
     public boolean validateSearchCriteria(String criteria, String searchValue) {
         if ("ID".equals(criteria)) {
             try {
@@ -951,72 +1182,62 @@ public class EmployeeViews extends javax.swing.JPanel {
     }
 
     public void hienthi() {
-        try {
-            // Lấy model của bảng và xóa dữ liệu cũ
-            DefaultTableModel model = (DefaultTableModel) jtbEmployee.getModel();
-            model.setRowCount(0);
+    try {
+        DefaultTableModel model = (DefaultTableModel) jtbEmployee.getModel();
+        model.setRowCount(0);
 
-            // Kết nối cơ sở dữ liệu
-            Connection conn = new DatabaseConnection().getJDBCConnection();
-            if (conn == null) {
-                System.out.println("Không thể kết nối database");
-                JOptionPane.showMessageDialog(this, "Không thể kết nối đến cơ sở dữ liệu.", "Lỗi", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-
-            // Câu lệnh SQL để lấy dữ liệu từ bảng employees và accounts
-            String sql = "SELECT e.employee_id, e.full_name, e.email, e.phone_number, e.address, e.date_of_birth, a.role_id "
-                    + "FROM employees e "
-                    + "LEFT JOIN accounts a ON e.employee_id = a.employee_id";
-            PreparedStatement ps = conn.prepareStatement(sql);
-
-            // Thực thi câu truy vấn
-            ResultSet rs = ps.executeQuery();
-
-            int recordCount = 0;
-            SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
-
-            // Duyệt qua các bản ghi trong ResultSet
-            while (rs.next()) {
-                recordCount++;
-                Vector<Object> row = new Vector<>();
-
-                // Thêm các cột vào hàng
-                row.add(rs.getInt("employee_id")); // Cột EmployeeID
-                row.add(rs.getString("full_name")); // Cột Full Name
-                row.add(rs.getString("email")); // Cột Email
-                row.add(rs.getString("phone_number")); // Cột Phone Number
-
-                // Kiểm tra và xử lý cột Address
-                String address = rs.getString("address");
-                row.add(address != null ? address : "N/A"); // Nếu address không null thì hiển thị giá trị của address, nếu null thì hiển thị "N/A"
-
-                // Xử lý ngày sinh (Date of Birth)
-                Date dob = rs.getDate("date_of_birth");
-                row.add(dob != null ? sdf.format(dob) : "N/A");
-
-                // Lấy giá trị Role từ role_id
-                int roleId = rs.getInt("role_id");
-                row.add(roleId == 0 ? "N/A" : roleId); // Nếu role_id không có thì hiển thị "N/A"
-
-                // Thêm hàng vào model
-                model.addRow(row);
-            }
-
-            // Kiểm tra nếu không có dữ liệu nào để hiển thị
-            if (recordCount == 0) {
-                JOptionPane.showMessageDialog(this, "Không có dữ liệu nào để hiển thị.", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
-            }
-
-            // Đóng các kết nối
-            rs.close();
-            ps.close();
-            conn.close();
-        } catch (SQLException e) {
-            e.printStackTrace();
-            JOptionPane.showMessageDialog(this, "Lỗi khi tải dữ liệu: " + e.getMessage(), "Lỗi", JOptionPane.ERROR_MESSAGE);
+        Connection conn = new DatabaseConnection().getJDBCConnection();
+        if (conn == null) {
+            JOptionPane.showMessageDialog(this, "Không thể kết nối đến cơ sở dữ liệu.", "Lỗi", JOptionPane.ERROR_MESSAGE);
+            return;
         }
+
+        // Thêm điều kiện WHERE để loại bỏ admin (role_id != 1)
+        String sql = "SELECT e.employee_id, e.full_name, e.email, e.phone_number, e.address, e.date_of_birth, a.role_id "
+                + "FROM employees e "
+                + "LEFT JOIN accounts a ON e.employee_id = a.employee_id "
+                + "WHERE a.role_id != 1 OR a.role_id IS NULL"; // Loại bỏ admin, nhưng vẫn giữ các tài khoản không có role
+        PreparedStatement ps = conn.prepareStatement(sql);
+        ResultSet rs = ps.executeQuery();
+
+        int recordCount = 0;
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+
+        while (rs.next()) {
+            recordCount++;
+            Vector<Object> row = new Vector<>();
+
+            row.add(rs.getInt("employee_id"));
+            row.add(rs.getString("full_name"));
+            row.add(rs.getString("email"));
+            row.add(rs.getString("phone_number"));
+
+            String address = rs.getString("address");
+            row.add(address != null ? address : "N/A");
+
+            Date dob = rs.getDate("date_of_birth");
+            row.add(dob != null ? sdf.format(dob) : "N/A");
+
+            // Cập nhật hiển thị role_id
+            int roleId = rs.getInt("role_id");
+            String roleName = rs.wasNull() ? "N/A" : (roleId == 0 ? "Unactive" : roleId == 2 ? "Employee" : "Unknown");
+            row.add(roleName);
+
+            model.addRow(row);
+        }
+
+        if (recordCount == 0) {
+            JOptionPane.showMessageDialog(this, "Không có dữ liệu nào để hiển thị.", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+        }
+
+        rs.close();
+        ps.close();
+        conn.close();
+    } catch (SQLException e) {
+        e.printStackTrace();
+        JOptionPane.showMessageDialog(this, "Lỗi khi tải dữ liệu: " + e.getMessage(), "Lỗi", JOptionPane.ERROR_MESSAGE);
     }
+}
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -1030,10 +1251,11 @@ public class EmployeeViews extends javax.swing.JPanel {
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JButton jbtLamMoi;
     private javax.swing.JButton jbtNhap;
+    private javax.swing.JButton jbtRSMatKhau;
     private javax.swing.JButton jbtSuaNhanVien;
     private javax.swing.JButton jbtThemNhanVien;
-    private javax.swing.JButton jbtTimKiem;
-    private javax.swing.JButton jbtXoaNhanVien;
+    private javax.swing.JButton jbtThongBao;
+    private javax.swing.JButton jbtTimKiem1;
     private javax.swing.JButton jbtXuat;
     private javax.swing.JComboBox<String> jcbbTimKiem;
     private com.toedter.calendar.JDateChooser jdcDateOfBirth;
@@ -1044,6 +1266,6 @@ public class EmployeeViews extends javax.swing.JPanel {
     private javax.swing.JTextField jtfPhone;
     private javax.swing.JTextField jtfTimKiem;
     private javax.swing.JTextField jtffullname;
-    private javax.swing.JTextField jtfid;
+    private javax.swing.JTextField jtfiEmployeeID;
     // End of variables declaration//GEN-END:variables
 }

@@ -25,38 +25,49 @@ public class AttendanceDate extends javax.swing.JDialog {
     private Map<String, Map<Integer, String>> monthDayStatus = new HashMap<>(); // Lưu trạng thái cho từng tháng
     private int employeeId;
     private SalaryViews salaryViews; // Khai báo đối tượng SalaryViews
+    private boolean isReadOnly;// Cờ mới cho chế độ chỉ xem
 
-    public AttendanceDate(java.awt.Frame parent, int employeeId, int month, int year) {
+    public AttendanceDate(java.awt.Frame parent, int employeeId, int month, int year, boolean isReadOnly) {
         super(parent, true);
         initComponents();
-        this.employeeId = employeeId; // Gán employeeId từ tham số
-        monthDayStatus.clear(); // Xóa trạng thái cũ để tránh bị ảnh hưởng bởi nhân viên khác
-        offDays.clear(); // Xóa danh sách ngày nghỉ cũ
-        // Cập nhật lịch với tháng và năm được truyền vào
+        this.employeeId = employeeId;
+        this.isReadOnly = isReadOnly;
+        monthDayStatus.clear();
+        offDays.clear();
+
         Calendar calendar = jcldAttendenceDate.getCalendar();
-        calendar.set(Calendar.MONTH, month - 1); // Calendar.MONTH bắt đầu từ 0
+        calendar.set(Calendar.MONTH, month - 1);
         calendar.set(Calendar.YEAR, year);
         jcldAttendenceDate.setCalendar(calendar);
 
-        // Tải dữ liệu theo employeeId và các năm chỉ định
-        loadDataFromDatabase(2022, 2024);
+        System.out.println("Khởi tạo AttendanceDate: employeeId=" + employeeId + ", month=" + month + ", year=" + year + ", isReadOnly=" + isReadOnly);
 
-        // Thêm sự kiện nhấp chuột vào ngày
+        if (!isReadOnly) {
+            addCalendarMouseListener();
+        } else {
+            updateOffDaysColor(jcldAttendenceDate.getDayChooser().getDayPanel().getComponents());
+        }
+
+        if (!isReadOnly) {
+            jbtThem.setEnabled(false);
+            System.out.println("Nút Thêm bị vô hiệu hóa vì isReadOnly=false");
+        }
+
+        loadDataFromDatabase(2022, 2025);
         addCalendarMouseListener();
-
-        // Khởi tạo trạng thái mặc định cho các ngày
         initializeDayStatuses(month, year);
     }
 
     // Trong class AttendanceDate
-    public AttendanceDate(java.awt.Frame parent, int employeeId) {
+    public AttendanceDate(java.awt.Frame parent, int employeeId, boolean isReadOnly) {
         this(parent, employeeId, Calendar.getInstance().get(Calendar.MONTH) + 1,
-                Calendar.getInstance().get(Calendar.YEAR));
+                Calendar.getInstance().get(Calendar.YEAR), isReadOnly);
+        System.out.println("Constructor mặc định: Hiển thị tháng hiện tại=" + (Calendar.getInstance().get(Calendar.MONTH) + 1) + "/" + Calendar.getInstance().get(Calendar.YEAR));
     }
 
     public AttendanceDate(int employeeId, SalaryViews salaryViews) {
         this.employeeId = employeeId;
-        this.salaryViews = salaryViews; // Gán đối tượng SalaryViews
+        this.salaryViews = salaryViews;
     }
 
     @SuppressWarnings("unchecked")
@@ -122,80 +133,79 @@ public class AttendanceDate extends javax.swing.JDialog {
 
     private void jbtThemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbtThemActionPerformed
         DatabaseConnection dbConnection = new DatabaseConnection();
-        Connection conn = dbConnection.getJDBCConnection();
+    Connection conn = dbConnection.getJDBCConnection();
 
-        Calendar calendar = jcldAttendenceDate.getCalendar();
-        int month = calendar.get(Calendar.MONTH) + 1;
-        int year = calendar.get(Calendar.YEAR);
-        String monthYearKey = month + "/" + year;
-        Map<Integer, String> dayStatus = monthDayStatus.get(monthYearKey);
+    Calendar calendar = jcldAttendenceDate.getCalendar();
+    int month = calendar.get(Calendar.MONTH) + 1;
+    int year = calendar.get(Calendar.YEAR);
+    String monthYearKey = month + "/" + year;
+    Map<Integer, String> dayStatus = monthDayStatus.get(monthYearKey);
 
-        if (dayStatus == null) {
-            initializeDayStatuses(month, year);
-            dayStatus = monthDayStatus.get(monthYearKey);
-        }
+    if (dayStatus == null) {
+        initializeDayStatuses(month, year);
+        dayStatus = monthDayStatus.get(monthYearKey);
+    }
 
-        // Lưu trạng thái chấm công vào cơ sở dữ liệu
-        try {
-            for (int day = 1; day <= 31; day++) {
-                if (isDateValid(year, month, day)) {
-                    String status = dayStatus.getOrDefault(day, "Đi Làm");
+    System.out.println("Bắt đầu lưu chấm công cho Employee ID: " + this.employeeId);
+    System.out.println("Tháng: " + month + ", Năm: " + year);
 
-                    // Kiểm tra xem ngày đã tồn tại trong bảng attendances chưa
-                    String checkQuery = "SELECT COUNT(*) AS count FROM attendances WHERE DAY(day) = ? AND MONTH(day) = ? AND YEAR(day) = ? AND employee_id = ?";
+    try {
+        for (int day = 1; day <= 31; day++) {
+            if (isDateValid(year, month, day)) {
+                String status = dayStatus.getOrDefault(day, "Đi Làm");
+                System.out.println("Đang xử lý ngày: " + day + ", Trạng thái: " + status);
 
-                    try (PreparedStatement checkStmt = conn.prepareStatement(checkQuery)) {
-                        checkStmt.setInt(1, day);
-                        checkStmt.setInt(2, month);
-                        checkStmt.setInt(3, year);
-                        checkStmt.setInt(4, this.employeeId);
-                        ResultSet rs = checkStmt.executeQuery();
-                        rs.next();
-                        int count = rs.getInt("count");
+                String checkQuery = "SELECT COUNT(*) AS count FROM attendances WHERE DAY(day) = ? AND MONTH(day) = ? AND YEAR(day) = ? AND employee_id = ?";
 
-                        if (count == 0) {
-                            // Thêm mới
-                            String query = "INSERT INTO attendances (day, status, employee_id) VALUES (STR_TO_DATE('" + day + "/" + month + "/" + year + "', '%d/%m/%Y'), ?, ?)";
-                            try (PreparedStatement insertStmt = conn.prepareStatement(query)) {
-                                insertStmt.setString(1, status);
-                                insertStmt.setInt(2, this.employeeId);
-                                insertStmt.executeUpdate();
-                            }
-                        } else {
-                            // Cập nhật trạng thái nếu đã tồn tại
-                            String query = "UPDATE attendances SET status = ? WHERE DAY(day) = ? AND MONTH(day) = ? AND YEAR(day) = ? AND employee_id = ?";
-                            try (PreparedStatement updateStmt = conn.prepareStatement(query)) {
-                                updateStmt.setString(1, status);
-                                updateStmt.setInt(2, day);
-                                updateStmt.setInt(3, month);
-                                updateStmt.setInt(4, year);
-                                updateStmt.setInt(5, this.employeeId);
-                                updateStmt.executeUpdate();
-                            }
+                try (PreparedStatement checkStmt = conn.prepareStatement(checkQuery)) {
+                    checkStmt.setInt(1, day);
+                    checkStmt.setInt(2, month);
+                    checkStmt.setInt(3, year);
+                    checkStmt.setInt(4, this.employeeId);
+                    ResultSet rs = checkStmt.executeQuery();
+                    rs.next();
+                    int count = rs.getInt("count");
+
+                    if (count == 0) {
+                        System.out.println("Thêm mới ngày: " + day);
+                        String query = "INSERT INTO attendances (day, status, employee_id) VALUES (STR_TO_DATE('" + day + "/" + month + "/" + year + "', '%d/%m/%Y'), ?, ?)";
+                        try (PreparedStatement insertStmt = conn.prepareStatement(query)) {
+                            insertStmt.setString(1, status);
+                            insertStmt.setInt(2, this.employeeId);
+                            insertStmt.executeUpdate();
+                        }
+                    } else {
+                        System.out.println("Cập nhật ngày: " + day);
+                        String query = "UPDATE attendances SET status = ? WHERE DAY(day) = ? AND MONTH(day) = ? AND YEAR(day) = ? AND employee_id = ?";
+                        try (PreparedStatement updateStmt = conn.prepareStatement(query)) {
+                            updateStmt.setString(1, status);
+                            updateStmt.setInt(2, day);
+                            updateStmt.setInt(3, month);
+                            updateStmt.setInt(4, year);
+                            updateStmt.setInt(5, this.employeeId);
+                            updateStmt.executeUpdate();
                         }
                     }
                 }
             }
-
-            // Cập nhật bảng salaries sau khi lưu trạng thái chấm công
-            String monthYear = month + "/" + year;
-            insertIntoSalary(this.employeeId, monthYear);
-
-            // Gọi phương thức updateDayOff từ SalaryViews để cập nhật số ngày nghỉ
-            if (salaryViews != null) {
-                salaryViews.updateDayOff(this.employeeId, monthYear);
-            }
-
-            // Thông báo thành công
-            JOptionPane.showMessageDialog(null, "Đã lưu trạng thái chấm công cho nhân viên " + this.employeeId + " thành công.", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
-
-        } catch (SQLException ex) {
-            ex.printStackTrace();
-            JOptionPane.showMessageDialog(null, "Lỗi khi lưu trạng thái chấm công!", "Lỗi", JOptionPane.ERROR_MESSAGE);
-        } finally {
-            dbConnection.closeConnection();
+        }
+        String monthYear = month + "/" + year;
+        System.out.println("Lưu thành công!");
+        insertIntoSalary(this.employeeId, monthYear);
+        
+        if (salaryViews != null) {
+            salaryViews.updateDayOff(this.employeeId, monthYear);
         }
 
+        JOptionPane.showMessageDialog(null, "Đã lưu trạng thái chấm công!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+
+    } catch (SQLException ex) {
+        System.err.println("Lỗi khi lưu trạng thái chấm công: " + ex.getMessage());
+        ex.printStackTrace();
+        JOptionPane.showMessageDialog(null, "Lỗi khi lưu trạng thái chấm công!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+    } finally {
+        dbConnection.closeConnection();
+    }
     }//GEN-LAST:event_jbtThemActionPerformed
 
     private void insertIntoSalary(int employeeId, String monthYear) {
@@ -220,6 +230,10 @@ public class AttendanceDate extends javax.swing.JDialog {
     }
 
     private void jbtHienThiNgayNghiActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbtHienThiNgayNghiActionPerformed
+        System.out.println("Nút Hiển thị ngày nghỉ được nhấp cho employeeId=" + employeeId);
+        System.out.println("Danh sách offDays hiện tại: " + offDays);
+        System.out.println("monthDayStatus cho tháng hiện tại: " + monthDayStatus.getOrDefault(
+                (jcldAttendenceDate.getCalendar().get(Calendar.MONTH) + 1) + "/" + jcldAttendenceDate.getCalendar().get(Calendar.YEAR), new HashMap<>()));
         updateOffDaysColor(jcldAttendenceDate.getDayChooser().getDayPanel().getComponents());
     }//GEN-LAST:event_jbtHienThiNgayNghiActionPerformed
 
@@ -231,47 +245,45 @@ public class AttendanceDate extends javax.swing.JDialog {
 
         String query = "SELECT DAY(day) AS day, MONTH(day) AS month, YEAR(day) AS year, status "
                 + "FROM attendances WHERE employee_id = ? AND YEAR(day) BETWEEN ? AND ?";
-        offDays.clear(); // Xóa danh sách ngày nghỉ trước khi thêm mới
+        offDays.clear();
 
         try {
             ps = conn.prepareStatement(query);
-            ps.setInt(1, this.employeeId);  // Sử dụng employeeId truyền từ AttendanceDateViews
+            ps.setInt(1, this.employeeId);
             ps.setInt(2, startYear);
             ps.setInt(3, endYear);
             ResultSet rs = ps.executeQuery();
 
+            int recordCount = 0;
             while (rs.next()) {
                 int day = rs.getInt("day");
                 int month = rs.getInt("month");
                 int year = rs.getInt("year");
                 String status = rs.getString("status");
 
-                // Khóa tháng/năm dùng để phân biệt trạng thái các ngày
                 String monthYearKey = month + "/" + year;
-
-                // Đảm bảo khởi tạo nếu chưa có trạng thái cho tháng/năm này
                 monthDayStatus.putIfAbsent(monthYearKey, new HashMap<>());
                 Map<Integer, String> dayStatus = monthDayStatus.get(monthYearKey);
 
-                // Cập nhật trạng thái cho ngày cụ thể
                 dayStatus.put(day, status);
-
-                // Thêm vào danh sách ngày nghỉ nếu trạng thái là "Nghỉ"
                 if ("Nghỉ".equals(status)) {
                     offDays.add(day);
                 }
+                recordCount++;
             }
+            System.out.println("Đã tải " + recordCount + " bản ghi từ attendances cho employeeId=" + employeeId + " từ " + startYear + " đến " + endYear);
+            System.out.println("offDays sau khi tải: " + offDays);
             rs.close();
         } catch (SQLException ex) {
+            System.out.println("Lỗi SQL khi tải dữ liệu: " + ex.getMessage());
             ex.printStackTrace();
         } finally {
-            // Đóng kết nối với cơ sở dữ liệu
             dbConnection.closeConnection();
         }
 
-        // Cập nhật màu cho các ngày nghỉ trong bảng lịch
         updateOffDaysColor(jcldAttendenceDate.getDayChooser().getDayPanel().getComponents());
     }
+
 
     private void updateCalendarForSelectedMonth() {
         Calendar selectedCalendar = jcldAttendenceDate.getCalendar();
@@ -309,56 +321,52 @@ public class AttendanceDate extends javax.swing.JDialog {
     }
 
     //Phương thức chuyển đổi trạng thái ngày khi nhấp vào
-    private void addCalendarMouseListener() {
-        JDayChooser dayChooser = jcldAttendenceDate.getDayChooser();
-        Component[] days = dayChooser.getDayPanel().getComponents();
+private void addCalendarMouseListener() {
+    JDayChooser dayChooser = jcldAttendenceDate.getDayChooser();
+    Component[] days = dayChooser.getDayPanel().getComponents();
 
-        for (Component dayComponent : days) {
-            if (dayComponent instanceof JButton) {
-                JButton dayButton = (JButton) dayComponent;
+    for (Component dayComponent : days) {
+        if (dayComponent instanceof JButton) {
+            JButton dayButton = (JButton) dayComponent;
 
-                dayButton.addMouseListener(new MouseAdapter() {
-                    @Override
-                    public void mouseClicked(MouseEvent e) {
-                        String dayText = dayButton.getText();
-                        if (!isNumeric(dayText)) {
-                            System.out.println("Bạn đã nhấp vào ô không phải là ngày hợp lệ!");
-                            return;
-                        }
-
-                        int day = Integer.parseInt(dayText);
-                        Calendar calendar = jcldAttendenceDate.getCalendar();
-                        int month = calendar.get(Calendar.MONTH) + 1;
-                        int year = calendar.get(Calendar.YEAR);
-                        String monthYearKey = month + "/" + year;
-
-                        monthDayStatus.putIfAbsent(monthYearKey, new HashMap<>());
-                        Map<Integer, String> dayStatus = monthDayStatus.get(monthYearKey);
-
-                        String status = dayStatus.getOrDefault(day, "Đi Làm");
-                        if ("Đi Làm".equals(status)) {
-                            dayStatus.put(day, "Nghỉ");
-                            if (!offDays.contains(day)) {
-                                offDays.add(day);
-                            }
-                        } else {
-                            dayStatus.put(day, "Đi Làm");
-                            offDays.remove((Integer) day);
-                        }
-
-                        updateOffDaysColor(days);
+            dayButton.addMouseListener(new MouseAdapter() {
+                @Override
+                public void mouseClicked(MouseEvent e) {
+                    String dayText = dayButton.getText();
+                    if (!isNumeric(dayText)) {
+                        System.out.println("Nhấp vào ô không hợp lệ: " + dayText);
+                        return;
                     }
-                });
-            }
-        }
 
-        // Thêm sự kiện lắng nghe thay đổi tháng
-        dayChooser.addPropertyChangeListener(evt -> {
-            if ("month".equals(evt.getPropertyName()) || "year".equals(evt.getPropertyName())) {
-                updateCalendarForSelectedMonth();
-            }
-        });
+                    int day = Integer.parseInt(dayText);
+                    Calendar calendar = jcldAttendenceDate.getCalendar();
+                    int month = calendar.get(Calendar.MONTH) + 1;
+                    int year = calendar.get(Calendar.YEAR);
+                    String monthYearKey = month + "/" + year;
+
+                    monthDayStatus.putIfAbsent(monthYearKey, new HashMap<>());
+                    Map<Integer, String> dayStatus = monthDayStatus.get(monthYearKey);
+
+                    String oldStatus = dayStatus.getOrDefault(day, "Đi Làm");
+                    String newStatus = "Đi Làm".equals(oldStatus) ? "Nghỉ" : "Đi Làm";
+
+                    System.out.println("Chuyển đổi trạng thái: Ngày " + day + " từ " + oldStatus + " sang " + newStatus);
+
+                    dayStatus.put(day, newStatus);
+                    if ("Nghỉ".equals(newStatus)) {
+                        offDays.add(day);
+                    } else {
+                        offDays.remove((Integer) day);
+                    }
+
+                    updateOffDaysColor(days);
+                }
+            });
+        }
     }
+}
+
+
 
     // Phương thức cập nhật màu cho tất cả các ngày trong danh sách nghỉ
     private void updateOffDaysColor(Component[] days) {
@@ -368,7 +376,11 @@ public class AttendanceDate extends javax.swing.JDialog {
         String monthYearKey = month + "/" + year;
 
         Map<Integer, String> dayStatus = monthDayStatus.getOrDefault(monthYearKey, new HashMap<>());
+        System.out.println("Cập nhật màu cho tháng: " + monthYearKey);
+        System.out.println("dayStatus: " + dayStatus);
+        System.out.println("offDays: " + offDays);
 
+        int coloredDays = 0;
         for (Component dayComponent : days) {
             if (dayComponent instanceof JButton) {
                 JButton dayButton = (JButton) dayComponent;
@@ -378,12 +390,15 @@ public class AttendanceDate extends javax.swing.JDialog {
                     int day = Integer.parseInt(dayText);
                     if (offDays.contains(day) && dayStatus.containsKey(day) && "Nghỉ".equals(dayStatus.get(day))) {
                         dayButton.setBackground(Color.RED);
+                        coloredDays++;
                     } else {
                         dayButton.setBackground(null);
                     }
                 }
             }
         }
+        System.out.println("Số ngày được tô màu đỏ: " + coloredDays);
+        jcldAttendenceDate.repaint(); // Đảm bảo giao diện được làm mới
     }
 
     // Phương thức kiểm tra chuỗi có phải là số không

@@ -14,6 +14,9 @@ public class LoginViews extends javax.swing.JFrame {
     public static final int WRONG_PASSWORD = -2;
     public static final int DATABASE_ERROR = -3;
     public static final int INVALID_ROLE = -4;
+    
+    private static final String ADMIN_USERNAME = "admin";
+    private static final String ADMIN_PASSWORD = "1";
 
     public LoginViews() {
         initComponents();
@@ -49,7 +52,6 @@ public class LoginViews extends javax.swing.JFrame {
         jtfMatKhau = new javax.swing.JPasswordField();
         jtfTaiKhoan = new javax.swing.JTextField();
         btnDNhap = new javax.swing.JButton();
-        jbtDangKy = new javax.swing.JButton();
         jcbAnHienMatKhau = new javax.swing.JCheckBox();
 
         jTextField1.setText("jTextField1");
@@ -124,19 +126,7 @@ public class LoginViews extends javax.swing.JFrame {
                 btnDNhapActionPerformed(evt);
             }
         });
-        jPanel4.add(btnDNhap, new org.netbeans.lib.awtextra.AbsoluteConstraints(148, 199, 90, 40));
-
-        jbtDangKy.setBackground(new java.awt.Color(0, 102, 102));
-        jbtDangKy.setFont(new java.awt.Font("Times New Roman", 1, 14)); // NOI18N
-        jbtDangKy.setForeground(new java.awt.Color(255, 255, 255));
-        jbtDangKy.setText("Đăng ký");
-        jbtDangKy.setBorder(null);
-        jbtDangKy.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jbtDangKyActionPerformed(evt);
-            }
-        });
-        jPanel4.add(jbtDangKy, new org.netbeans.lib.awtextra.AbsoluteConstraints(276, 199, 90, 40));
+        jPanel4.add(btnDNhap, new org.netbeans.lib.awtextra.AbsoluteConstraints(150, 200, 210, 40));
 
         jcbAnHienMatKhau.setBackground(new java.awt.Color(255, 255, 255));
         jcbAnHienMatKhau.setFont(new java.awt.Font("Times New Roman", 1, 12)); // NOI18N
@@ -157,12 +147,6 @@ public class LoginViews extends javax.swing.JFrame {
         pack();
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
-
-    private void jbtDangKyActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbtDangKyActionPerformed
-        RegisterViews registerPage = new RegisterViews();
-        registerPage.setVisible(true);
-        this.dispose();
-    }//GEN-LAST:event_jbtDangKyActionPerformed
 
     private void jcbAnHienMatKhauActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jcbAnHienMatKhauActionPerformed
         jtfMatKhau.setEchoChar(jcbAnHienMatKhau.isSelected() ? (char) 0 : '*');
@@ -190,6 +174,14 @@ public class LoginViews extends javax.swing.JFrame {
     }//GEN-LAST:event_btnDNhapActionPerformed
 
     public void loginWithUsername(String username, String password) {
+        // Kiểm tra tài khoản admin hardcode trước
+        if (username.equals(ADMIN_USERNAME) && password.equals(ADMIN_PASSWORD)) {
+            TrangChinh adminPage = new TrangChinh();
+            adminPage.setVisible(true);
+            this.dispose();
+            return;
+        }
+        
         String hashedPassword = HashPassword.hashPassword(password); // Mã hóa mật khẩu
         int loginResult = checkLoginByUsername(username, hashedPassword); // Truyền trực tiếp username và mật khẩu đã mã hóa
         handleLoginResult(loginResult, username, password);
@@ -227,9 +219,8 @@ public class LoginViews extends javax.swing.JFrame {
                 showMessage("Lỗi kết nối đến cơ sở dữ liệu!");
                 break;
             case INVALID_ROLE:
-                showMessage("Tài khoản chưa được cấp quyền hoặc quyền hạn không phù hợp !");
+                showMessage("Tài khoản chưa được kích hoạt hoặc quyền hạn không hợp lệ!");
                 break;
-
             default:
                 showMessage("Đã xảy ra lỗi không xác định! (Mã lỗi: " + loginResult + ")");
                 break;
@@ -251,28 +242,27 @@ public class LoginViews extends javax.swing.JFrame {
      * Phương thức dùng chung để kiểm tra đăng nhập với query tùy chỉnh
      */
     private int checkLoginWithQuery(String identifier, String hashedPassword, String query) {
-        try (Connection conn = new DatabaseConnection().getJDBCConnection(); PreparedStatement stmt = conn.prepareStatement(query)) {
+        try (Connection conn = new DatabaseConnection().getJDBCConnection(); 
+             PreparedStatement stmt = conn.prepareStatement(query)) {
 
-            // Truyền tham số username/email vào câu truy vấn
             stmt.setString(1, identifier);
 
-            // Thực thi truy vấn và xử lý kết quả
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
                     String dbPassword = rs.getString("password");
-                    String roleId = rs.getString("role_id");  // Lấy giá trị role_id là String để dễ xử lý null
+                    int roleId = rs.getInt("role_id");
 
-                    // Kiểm tra mật khẩu
                     if (hashedPassword.equals(dbPassword)) {
-                        // Kiểm tra role_id
-                        if (roleId == null || roleId.isEmpty()) {
-                            return INVALID_ROLE; // Nếu role_id là null hoặc trống
-                        } else if (roleId.equals("1")) {
+                        if (rs.wasNull()) { // role_id là null
+                            return INVALID_ROLE;
+                        } else if (roleId == 0) { // Thêm kiểm tra role_id = 0 (Unactive)
+                            return INVALID_ROLE;
+                        } else if (roleId == 1) {
                             return LOGIN_SUCCESS_ADMIN;
-                        } else if (roleId.equals("2")) {
+                        } else if (roleId == 2) {
                             return LOGIN_SUCCESS_EMPLOYEE;
                         } else {
-                            return INVALID_ROLE; // Trường hợp role_id không phải là 1 hoặc 2
+                            return INVALID_ROLE; // Các role_id khác không hợp lệ
                         }
                     } else {
                         return WRONG_PASSWORD;
@@ -286,7 +276,6 @@ public class LoginViews extends javax.swing.JFrame {
             return DATABASE_ERROR;
         }
     }
-
 
     private void jtfTaiKhoanActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jtfTaiKhoanActionPerformed
         // TODO add your handling code here:
@@ -339,7 +328,6 @@ public class LoginViews extends javax.swing.JFrame {
     private javax.swing.JSeparator jSeparator7;
     private javax.swing.JSeparator jSeparator8;
     private javax.swing.JTextField jTextField1;
-    private javax.swing.JButton jbtDangKy;
     private javax.swing.JCheckBox jcbAnHienMatKhau;
     private javax.swing.JPasswordField jtfMatKhau;
     private javax.swing.JTextField jtfTaiKhoan;

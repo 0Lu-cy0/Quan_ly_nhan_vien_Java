@@ -315,7 +315,7 @@ public class ChangePassword extends javax.swing.JFrame {
 
                     int option = JOptionPane.showConfirmDialog(this, "Đổi mật khẩu thành công! Bạn có muốn quay về trang nhân viên không?", "Thành công", JOptionPane.OK_CANCEL_OPTION);
                     if (option == JOptionPane.OK_OPTION) {
-                        new EmployeeHomePage(username, matKhauMoi).setVisible(true);
+                        new LoginViews().setVisible(true);
                         dispose();
                     }
                 } else {
